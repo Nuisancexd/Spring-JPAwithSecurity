@@ -1,0 +1,73 @@
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import why.me.SpringJPA.Clown.Clown;
+import why.me.SpringJPA.Clown.ClownInformation;
+import why.me.SpringJPA.Repositories.ClownRepository;
+
+import java.util.List;
+import java.util.Set;
+
+import static why.me.SpringJPA.Security.ApplicationClownRole.*;
+
+@SpringBootApplication
+public class SpringApplication {
+
+	@Autowired
+	public SpringJpaApplication(Set<SimpleGrantedAuthority> grantedAuthority, PasswordEncoder passwordEncoder) {
+		this.grantedAuthority = grantedAuthority;
+		this.passwordEncoder = passwordEncoder;
+	}
+
+	public static void main(String[] args) {
+		SpringApplication.run(SpringJpaApplication.class, args);
+	}
+
+	private final Set<SimpleGrantedAuthority> grantedAuthority;
+	private final PasswordEncoder passwordEncoder;
+
+	@Bean
+	CommandLineRunner commandLineRunner(ClownRepository clownRepository) {
+		return args -> {
+			clownRepository.save(
+					new Clown(
+					"Clown", "Sad",
+					"SadClown@mail.ru", passwordEncoder.encode("pass"),
+							"log", ADMIN.getGrantedAuthority(),
+					List.of(
+							new ClownInformation(
+							null, "Purple", "he very sad",
+							"26-07-2003", "+79959459114"),
+							new ClownInformation(
+									null,null, "he said: this is cruel world",
+									null, null)
+							)));
+
+			clownRepository.save(
+					new Clown(
+							"Clown", "Happy", "HappyClown@mail.ru",
+							passwordEncoder.encode("pass123"), "log123", CLOWN.getGrantedAuthority(),
+							List.of(
+									new ClownInformation(
+											null, "Pink", "boy or girl? hm..", "02-10-2010", null),
+									new ClownInformation(
+											null, null, "He loves anime", null,null
+											))));
+			clownRepository.save(
+					new Clown(
+							"Clown", "Angry",
+							"RedClown@mail.ru", passwordEncoder.encode("password"), "login", OBSERVEROFCLOWNS.getGrantedAuthority(),
+							List.of(
+									new ClownInformation(
+											null, "Red", "So scary when he angry", "01-03-2015", "+777771327"),
+									new ClownInformation(
+											null, null, "Help! Red is Angry, run!!", null, null
+											))));
+		};
+	}
+}
