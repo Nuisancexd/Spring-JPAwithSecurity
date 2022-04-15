@@ -1,0 +1,55 @@
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+
+import javax.persistence.*;
+import java.util.Objects;
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
+@Entity(name = "clownInformation")
+@ToString
+public class ClownInformation {
+
+    @Id
+    @SequenceGenerator(
+            name = "clownInformation_id",
+            sequenceName = "clownInformation_id",
+            allocationSize = 1
+    )
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "clownInformation_id"
+    )
+    private Long id;
+    private String color;
+    @Column(
+            name = "informationOfClown",
+            columnDefinition = "TEXT"
+    )
+    private String informationOfClown;
+    private String wasBorn;
+    private String phoneNumber;
+
+    @Override
+    public boolean equals(Object o) {
+        if(this == o)
+            return true;
+        if(!(o instanceof ClownInformation))
+            return false;
+        ClownInformation clownInformation = (ClownInformation) o;
+        return
+                Objects.equals(this.id, clownInformation.id) &&
+                    Objects.equals(this.color, clownInformation.color) &&
+                    Objects.equals(this.informationOfClown, clownInformation.informationOfClown) &&
+                        Objects.equals(this.wasBorn, clownInformation.wasBorn) &&
+                        Objects.equals(this.phoneNumber, clownInformation.phoneNumber);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.id, this.color, this.informationOfClown, this.wasBorn, this.phoneNumber);
+    }
+}
