@@ -1,0 +1,26 @@
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+import why.me.SpringJPA.Clown.Clown;
+import why.me.SpringJPA.Repositories.ClownInfRepository;
+import why.me.SpringJPA.Repositories.ClownRepository;
+
+import java.util.Optional;
+@Service
+public class ApplicationClownService implements UserDetailsService{
+
+    @Autowired
+    private ClownRepository clownRepository;
+    private ClownInfRepository clownInfRepository;
+
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Optional<Clown> clowne = clownRepository.getClownByEmail(email);
+
+        clowne.orElseThrow(() -> new UsernameNotFoundException(String.format("clown email %s not found", email)));
+
+        return clowne.map(ApplicationClown::new).get();
+    }
+}
