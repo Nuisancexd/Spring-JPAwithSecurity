@@ -1,0 +1,33 @@
+
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.testng.collections.Sets;
+
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static why.me.SpringJPA.Security.ApplicationRolePermission.*;
+
+public enum ApplicationClownRole {
+
+    CLOWN(Sets.newHashSet()),
+    ADMIN(Sets.newHashSet(CLOWN_READ, CLOWN_WRITE, ADMIN_READ, ADMIN_WRITE)),
+    OBSERVEROFCLOWNS(Sets.newHashSet(CLOWN_READ, ADMIN_READ));
+
+    private final Set<ApplicationRolePermission> permissions;
+
+    ApplicationClownRole(Set<ApplicationRolePermission> permissions) {
+        this.permissions = permissions;
+    }
+
+    public Set<ApplicationRolePermission> getPermission() {
+        return permissions;
+    }
+
+    public Set<SimpleGrantedAuthority> getGrantedAuthority() {
+        Set<SimpleGrantedAuthority> permissions = getPermission().stream()
+                .map(permission -> new SimpleGrantedAuthority(permission.getPermission()))
+                .collect(Collectors.toSet());
+        permissions.add(new SimpleGrantedAuthority("ROLE_" + this.name()));
+        return permissions;
+    }
+}
