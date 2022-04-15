@@ -1,0 +1,9 @@
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import why.me.SpringJPA.Clown.ClownInformation;
+
+
+@Repository
+public interface ClownInfRepository extends JpaRepository<ClownInformation, Long> {
+
+}
