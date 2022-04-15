@@ -1,0 +1,8 @@
+import why.me.SpringJPA.Clown.Clown;
+
+import java.util.Optional;
+
+public interface ApplicationClownDao {
+
+    Optional<Clown> selectApplicationByUsername(String email);
+}
