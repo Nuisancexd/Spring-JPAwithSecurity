@@ -1,0 +1,35 @@
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Repository;
+import why.me.SpringJPA.Clown.Clown;
+import why.me.SpringJPA.Repositories.ClownInfRepository;
+import why.me.SpringJPA.Repositories.ClownRepository;
+
+import java.util.List;
+import java.util.Optional;
+
+@Repository("fake")
+public class FakeApplictionClownDaoService implements ApplicationClownDao {
+
+    private final PasswordEncoder passwordEncoder;
+    private final ClownRepository clownRepository;
+    private final ClownInfRepository clownInfRepository;
+    private final List<Clown> clown;
+
+    @Autowired
+    public FakeApplictionClownDaoService(PasswordEncoder passwordEncoder, ClownRepository clownRepository, ClownInfRepository clownInfRepository, List<Clown> clown) {
+        this.passwordEncoder = passwordEncoder;
+        this.clownRepository = clownRepository;
+        this.clownInfRepository = clownInfRepository;
+        this.clown = clown;
+    }
+
+
+    @Override
+    public Optional<Clown> selectApplicationByUsername(String username) {
+        return clown
+                .stream()
+                .filter(applicationClownEmail -> username.equals(applicationClownEmail.getEmail()))
+                .findFirst();
+    }
+}
