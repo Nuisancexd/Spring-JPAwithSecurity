@@ -1,0 +1,68 @@
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+import why.me.SpringJPA.Clown.Clown;
+import why.me.SpringJPA.Repositories.ClownInfRepository;
+import why.me.SpringJPA.Repositories.ClownRepository;
+
+import java.util.List;
+
+@Controller
+@RestController
+public class ClownController {
+
+
+    private final ClownRepository clownRepository;
+    private final ClownInfRepository clownInfRepository;
+
+    @Autowired
+    public ClownController(ClownRepository clownRepository, ClownInfRepository clownInfRepository) {
+        this.clownRepository = clownRepository;
+        this.clownInfRepository = clownInfRepository;
+    }
+
+    @GetMapping("home/clowns")
+    @PreAuthorize("hasAnyRole('ROLE_CLOWN', 'ROLE_ADMIN', 'ROLE_OBSERVEROFCLOWNS')")
+    List<Clown> getAllClown() {
+        return clownRepository.findAll();
+    }
+
+    @GetMapping("home/clowns/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_CLOWN', 'ROLE_ADMIN', 'ROLE_OBSERVEROFCLOWNS')")
+    Clown idClown(@PathVariable Long id) {
+        return clownRepository.findById(id).orElseThrow(
+                () -> new UsernameNotFoundException("Clown not found" + id)
+        );
+    }
+
+    @PostMapping("home/clowns")
+    @PreAuthorize("hasAuthority('clown:write')")
+    Clown registerNewClown(@RequestBody Clown newClown) {
+        return clownRepository.save(newClown);
+    }
+
+    @DeleteMapping(path = "{id}")
+    @PreAuthorize("hasAuthority('clown:write')")
+    public void deleteClown(@PathVariable("id") Long id) {
+        clownRepository.deleteById(id);
+    }
+
+    @PutMapping(path = "{id}")
+    @PreAuthorize("hasAuthority('clown:write')")
+    Clown updateClown(@RequestBody Clown newClown, @PathVariable("id") Long id) {
+        return clownRepository.findById(id).map(
+                clownheh -> {
+                    clownheh.setFirstName(newClown.getFirstName());
+                    clownheh.setLastName(newClown.getLastName());
+                    clownheh.setEmail(newClown.getEmail());
+                    clownheh.setPassword(newClown.getPassword());
+                    clownheh.setLogin(newClown.getLogin());
+                    return clownRepository.save(clownheh);
+                }).orElseGet(() -> {
+                    newClown.setId(id);
+                    return clownRepository.save(newClown);
+                });
+        }
+}
