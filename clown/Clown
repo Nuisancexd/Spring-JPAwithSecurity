@@ -1,0 +1,116 @@
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import javax.persistence.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+
+@NoArgsConstructor
+@Data
+@Entity(name = "clown")
+public class Clown{
+    @Id
+    @SequenceGenerator(
+            name = "clown_id",
+            sequenceName = "clown_id",
+            allocationSize = 1
+    )
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "clown_id"
+    )
+    @Column(name = "clown_id")
+    private Long id;
+    @Column(
+            name = "firstName",
+            nullable = false
+    )
+    private String firstName;
+    @Column(
+            name = "lastName",
+            nullable = false
+    )
+    private String lastName;
+    @Column(
+            name = "email",
+            nullable = false,
+            unique = true
+    )
+    private String email;
+    @Column(
+            name = "password",
+            nullable = false
+    )
+    private String password;
+    @Column(
+            name = "login",
+            nullable = false,
+            unique = true
+    )
+    private String login;
+
+    @Transient
+    private Set<SimpleGrantedAuthority> grantedAuthority;
+
+    @OneToMany(
+            cascade = CascadeType.ALL
+    )
+    @JoinColumn(
+            name = "clown_id",
+            referencedColumnName = "clown_id"
+    )
+    private List<ClownInformation> informations;
+
+    public Clown(String firstName, String lastName,
+          String email, String password,
+          String login,
+                 Set<SimpleGrantedAuthority> grantedAuthority,
+                 List<ClownInformation> informations) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.login = login;
+        this.grantedAuthority = grantedAuthority;
+        this.informations = informations;
+    }
+
+
+
+    @Override
+    public boolean equals(Object o) {
+        if(this == o)
+            return true;
+        if(!(o instanceof Clown))
+            return false;
+        Clown clown = (Clown) o;
+        return
+                Objects.equals(this.id, clown.id) &&
+                        Objects.equals(this.firstName, clown.firstName) &&
+                        Objects.equals(this.lastName, clown.lastName) &&
+                        Objects.equals(this.email, clown.email) &&
+                        Objects.equals(this.login, clown.login) &&
+                        Objects.equals(this.password, clown.password);
+    }
+    @Override
+    public int hashCode() {
+        return Objects.hash(
+                this.id, this.firstName, this.lastName,
+                this.email, this.login, this.password
+        );
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" +
+                "id = " + id + ", " +
+                "firstName = " + firstName + ", " +
+                "lastName = " + lastName + ", " +
+                "email = " + email + ", " +
+                "password = " + password + ", " +
+                "login = " + login + ")";
+    }
+}
+
